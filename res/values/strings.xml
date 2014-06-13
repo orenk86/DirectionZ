@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">DirectionZ</string>
+    <string name="title_create_game">Create a new Game</string>
+    <string name="title_start_game">Start a new Game</string>
+    <string name="title_join_game">Join a Game</string>
+    <string name="navigation_drawer_open">Menu</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_settings">Menu</string>
+    <string name="title_activity_start_game">Start Game</string>
+    <string name="title_activity_join_game">Join Game</string>
+    <string name="title_activity_create_game">Create Game</string>
+    <string name="title_activity_splash_window">DirectionZ</string>
+    <string name="loading">Wait...Preparing Games</string>
+    <string name="create">Create</string>
+    <string name="title_activity_main_game_fragment">DirectionZ</string>
+    <string name="hello_world">Hello world!</string>
+	<string name="game_name_text">Game</string>
+</resources>
