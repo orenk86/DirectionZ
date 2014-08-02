@@ -19,7 +19,7 @@ import android.view.MenuItem;
 
 public class WelcomeScreenActivity extends FragmentActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 	ArrayList<MarkerOptions> gameMarkers;
-//	boolean isCreateGame = true;
+	boolean isCreateGame = true;
 	Fragment startFragment = new StartGameFragment();
 	Fragment createFragment = new CreateGameFragment();
 	Fragment joinFragment = new JoinGameFragment();
@@ -29,16 +29,16 @@ public class WelcomeScreenActivity extends FragmentActivity implements Navigatio
 	/**
 	 * @return the isCreateGame
 	 */
-//	public boolean isCreateGame() {
-//		return isCreateGame;
-//	}
+	public boolean isCreateGame() {
+		return isCreateGame;
+	}
 
 	/**
 	 * @param isCreateGame the isCreateGame to set
 	 */
-//	public void setCreateGame(boolean isCreateGame) {
-//		this.isCreateGame = isCreateGame;
-//	}
+	public void setCreateGame(boolean isCreateGame) {
+		this.isCreateGame = isCreateGame;
+	}
 
 	/**
 	 * @return the map

@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.json.JSONObject;
 
-import android.graphics.Color;
 import android.os.AsyncTask;
 
 import com.finalProject.util.DirectionsJSONParser;

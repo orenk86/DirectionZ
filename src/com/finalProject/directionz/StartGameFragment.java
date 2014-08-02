@@ -56,9 +56,9 @@ public class StartGameFragment extends Fragment implements OnItemClickListener {
 						mMarkerPoints.add(appUtils.getMarkerOptions(responseTrackJSON.getJSONObject(i)));
 					}
 					((WelcomeScreenActivity) getActivity()).setGameMarkers(mMarkerPoints);
-//					((WelcomeScreenActivity) getActivity()).setCreateGame(false);
-//					((WelcomeScreenActivity) getActivity()).onNavigationDrawerItemSelected(0);
-					((WelcomeScreenActivity) getActivity()).startMainGameFragment();
+					((WelcomeScreenActivity) getActivity()).setCreateGame(false);
+					((WelcomeScreenActivity) getActivity()).onNavigationDrawerItemSelected(0);
+//					((WelcomeScreenActivity) getActivity()).startMainGameFragment();
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}

@@ -46,6 +46,7 @@ public class CreateGameFragment extends Fragment implements LocationListener {
 	View rootView;
 	GoogleMap map;
 	ArrayList<MarkerOptions> mMarkerPoints;
+	ArrayList<MarkerOptions> tempMarkerPoints;
 	Location location;
 	LatLng markerPoint;
 	Context context;
@@ -55,7 +56,7 @@ public class CreateGameFragment extends Fragment implements LocationListener {
 	double mLatitude = 0;
 	double mLongitude = 0;
 	ApplicationUtils appUtils;
-//	private boolean isCreateGame = true;
+	private boolean isCreateGame = true;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -83,10 +84,10 @@ public class CreateGameFragment extends Fragment implements LocationListener {
 
 			@Override
 			public void onMapClick(LatLng point) {
-//				if (isCreateGame) {
+				if (isCreateGame) {
 					markerPoint = point;
 					openMarkerAddDialog();
-//				}
+				}
 			}
 
 		});
@@ -112,11 +113,14 @@ public class CreateGameFragment extends Fragment implements LocationListener {
 	@Override
 	public void onResume() {
 		super.onResume();
-//		isCreateGame = ((WelcomeScreenActivity) getActivity()).isCreateGame();
+		isCreateGame = ((WelcomeScreenActivity) getActivity()).isCreateGame();
 		setHasOptionsMenu(true);
-//		if (!isCreateGame) {
-//			mMarkerPoints = ((WelcomeScreenActivity) getActivity()).getGameMarkers();
-//		}
+		if (!isCreateGame) {
+			tempMarkerPoints = ((WelcomeScreenActivity) getActivity()).getGameMarkers();
+			for (int i=0; i<tempMarkerPoints.size(); i++) {
+				GoogleMapsUtil.drawMarker(map, tempMarkerPoints.get(i).getPosition(), tempMarkerPoints.get(i).getTitle(), tempMarkerPoints.get(i).getSnippet(), mMarkerPoints);
+			}
+		}
 	}
 	
 	@Override
@@ -132,7 +136,6 @@ public class CreateGameFragment extends Fragment implements LocationListener {
 
 			if (status != ConnectionResult.SUCCESS) { // Google Play Services
 														// are not available
-
 				int requestCode = 10;
 				Dialog dialog = GooglePlayServicesUtil.getErrorDialog(status, getActivity(), requestCode);
 				dialog.show();
@@ -226,12 +229,10 @@ public class CreateGameFragment extends Fragment implements LocationListener {
 	public void onLocationChanged(Location location) {
 		mLatitude = location.getLatitude();
 		mLongitude = location.getLongitude();
-		
-//		if (isCreateGame) {
-			LatLng point = new LatLng(mLatitude, mLongitude);
-			map.moveCamera(CameraUpdateFactory.newLatLng(point));
-//		} else {
-			String result = GoogleMapsUtil.locationChange(map, getActivity(),mLatitude, mLongitude, mMarkerPoints);
+		LatLng point = new LatLng(mLatitude, mLongitude);
+		map.moveCamera(CameraUpdateFactory.newLatLng(point));
+		if (!isCreateGame) {
+			String result = GoogleMapsUtil.locationChange(map, getActivity(), mLatitude, mLongitude, mMarkerPoints);
 
 			if (null != result) {
 				switch (result) {
@@ -272,8 +273,7 @@ public class CreateGameFragment extends Fragment implements LocationListener {
 					break;
 				}
 			}
-//		}
-
+		}
 	}
 	
 	private void openDialog(String result) {

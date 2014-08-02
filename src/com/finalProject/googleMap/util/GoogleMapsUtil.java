@@ -98,7 +98,7 @@ public class GoogleMapsUtil {
 				result = checkIfHints(point , mMarkerPoints);
 				if (null== result) {
 					calculateP2PDirection(point, mMarkerPoints);
-					 //result = checkNextDirection(point, mMarkerPoints);
+					 result = checkNextDirection(point, mMarkerPoints);
 
 				}
 			}
@@ -111,7 +111,7 @@ public class GoogleMapsUtil {
 	private static  String checkNextDirection(LatLng point, ArrayList<MarkerOptions> mMarkerPoints) {
 		//double absLong = Math.abs(mLongitude) - Math.abs(mMarkerPoints.get(0).getPosition().latitude);
 		//double absLat = Math.abs(mLatitude) - Math.abs(mMarkerPoints.get(0).getPosition().latitude);
-
+		String result = null;
 		double bearing = CalculateBearing.initial(point.latitude, point.longitude, mMarkerPoints.get(0).getPosition().latitude, mMarkerPoints.get(0).getPosition().latitude);
 //		if (bearing > 0.0 && absLong == 0.0) {
 //			return "down";
@@ -139,30 +139,38 @@ public class GoogleMapsUtil {
 //		}
 
 		if (bearing >135 && bearing <225) {
-			return "down";
-		}
+			result = "down";
+//			return "down";
+		} 
 		if (bearing >225 && bearing <315) {
-			return "left";
-		}
+			result = "left";
+//			return "left";
+		} 
 		if ((bearing >315 && bearing <360) || (bearing <45 && bearing >0)) {
-			return "up";
-		}
+			result = "up";
+//			return "up";
+		} 
 		if (bearing >45 && bearing <135) {
-			return "right";
-		}
+			result = "right";
+//			return "right";
+		} 
 		if (bearing >115 && bearing <155) {
-			return "downLeft";
-		}
+			result = "downLeft";
+//			return "downLeft";
+		} 
 		if (bearing >205 && bearing <245) {
-			return "downRight";
-		}
+			result = "downRight";
+//			return "downRight";
+		} 
 		if (bearing >295 && bearing <335) {
-			return "upLeft";
-		}
+			result = "upLeft";
+//			return "upLeft";
+		} 
 		if (bearing <60 && bearing >25) {
-			return "upRight";
+			result = "upRight";
+//			return "upRight";
 		}
-		return null;
+		return result;
 	}
 
 	private static  String checkIfHints(LatLng point, ArrayList<MarkerOptions> mMarkerPoints) {
@@ -170,7 +178,7 @@ public class GoogleMapsUtil {
 			double abslong = Math.abs(point.longitude - mMarkerPoints.get(0).getPosition().longitude);
 			double abslat = Math.abs(point.latitude - mMarkerPoints.get(0).getPosition().latitude);
 
-			if (abslong == 0.0 && abslat == 0.0) {
+			if (abslong <= 0.5 && abslat <= 0.5) {
 				return "hintReached";
 			}
 		} else {

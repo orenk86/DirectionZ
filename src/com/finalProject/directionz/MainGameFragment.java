@@ -29,7 +29,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMapOptions;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -69,7 +68,7 @@ public class MainGameFragment extends Fragment implements LocationListener, Anim
 		directionAnim = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_in_fade_out);
 		return rootView;
 	}
-
+//done.
 	private void initializeMap() {
 		if (map == null) {
 
