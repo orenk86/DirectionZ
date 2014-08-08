@@ -116,10 +116,15 @@ public class CreateGameFragment extends Fragment implements LocationListener {
 		isCreateGame = ((WelcomeScreenActivity) getActivity()).isCreateGame();
 		setHasOptionsMenu(true);
 		if (!isCreateGame) {
-			tempMarkerPoints = ((WelcomeScreenActivity) getActivity()).getGameMarkers();
-			for (int i=0; i<tempMarkerPoints.size(); i++) {
-				GoogleMapsUtil.drawMarker(map, tempMarkerPoints.get(i).getPosition(), tempMarkerPoints.get(i).getTitle(), tempMarkerPoints.get(i).getSnippet(), mMarkerPoints);
-			}
+			updateMap();
+		}
+	}
+	
+	public void updateMap() {
+
+		tempMarkerPoints = ((WelcomeScreenActivity) getActivity()).getGameMarkers();
+		for (int i=0; i<tempMarkerPoints.size(); i++) {
+			GoogleMapsUtil.drawMarker(map, tempMarkerPoints.get(i).getPosition(), tempMarkerPoints.get(i).getTitle(), tempMarkerPoints.get(i).getSnippet(), mMarkerPoints);
 		}
 	}
 	
@@ -281,23 +286,20 @@ public class CreateGameFragment extends Fragment implements LocationListener {
 
 			dialog = new Dialog(getActivity());
 			dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-			if (result.equals("hintReached")) {
-				dialog.setContentView(R.layout.hint_popup);
-				final TextView hintTitle = (TextView) dialog.findViewById(R.id.hintTitle);
-				final TextView hint = (TextView) dialog.findViewById(R.id.hint);
-				hintTitle.setText(mMarkerPoints.get(0).getTitle());
-				hint.setText(mMarkerPoints.get(0).getSnippet());
-				mMarkerPoints.remove(mMarkerPoints.get(0));
-				
-			} else {
-				dialog.setContentView(R.layout.end_game_popup);
-			}
-
-			dialog.show();
-		} else {
-			dialog.show();
 		}
-
+		if (result.equals("hintReached")) {
+			dialog.setContentView(R.layout.hint_popup);
+			final TextView hintTitle = (TextView) dialog.findViewById(R.id.hintTitle);
+			final TextView hint = (TextView) dialog.findViewById(R.id.hint);
+			hintTitle.setText(mMarkerPoints.get(0).getTitle());
+			hint.setText(mMarkerPoints.get(0).getSnippet());
+			mMarkerPoints.remove(mMarkerPoints.get(0));
+			((WelcomeScreenActivity) getActivity()).setGameMarkers(mMarkerPoints);
+			tempMarkerPoints = ((WelcomeScreenActivity) getActivity()).getGameMarkers(); 
+		} else {
+			dialog.setContentView(R.layout.end_game_popup);
+		}
+		dialog.show();
 	}
 
 	@Override

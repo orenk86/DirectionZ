@@ -66,6 +66,7 @@ public class WelcomeScreenActivity extends FragmentActivity implements Navigatio
 	 *            the gameMarkers to set
 	 */
 	public void setGameMarkers(ArrayList<MarkerOptions> gameMarkers) {
+		this.gameMarkers = null;
 		this.gameMarkers = gameMarkers;
 	}
 

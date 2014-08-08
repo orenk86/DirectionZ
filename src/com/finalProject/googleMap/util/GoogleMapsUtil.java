@@ -93,7 +93,7 @@ public class GoogleMapsUtil {
 		
 		map.moveCamera(CameraUpdateFactory.newLatLng(point));
 		map.animateCamera(CameraUpdateFactory.zoomTo(20));
-		if (!mMarkerPoints.isEmpty()) {
+//		if (!mMarkerPoints.isEmpty()) {
 			if (mMarkerPoints.size() > 0) {
 				result = checkIfHints(point , mMarkerPoints);
 				if (null== result) {
@@ -101,8 +101,10 @@ public class GoogleMapsUtil {
 					 result = checkNextDirection(point, mMarkerPoints);
 
 				}
+			} else {
+				result = "endGame";
 			}
-		}
+//		}
 
 		return result;
 
@@ -174,17 +176,17 @@ public class GoogleMapsUtil {
 	}
 
 	private static  String checkIfHints(LatLng point, ArrayList<MarkerOptions> mMarkerPoints) {
+		String result = null;
 		if (mMarkerPoints.size() >= 1) {
 			double abslong = Math.abs(point.longitude - mMarkerPoints.get(0).getPosition().longitude);
 			double abslat = Math.abs(point.latitude - mMarkerPoints.get(0).getPosition().latitude);
-
-			if (abslong <= 0.5 && abslat <= 0.5) {
-				return "hintReached";
+			if (abslong <= 0.00005 && abslat <= 0.00005) {
+				result = "hintReached";
 			}
 		} else {
-			return "gameEnd";
+			result = "gameEnd";
 		}
-		return null;
+		return result;
 	}
 
 	/**
