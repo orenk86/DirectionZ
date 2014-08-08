@@ -128,7 +128,7 @@ public class MainGameFragment extends Fragment implements LocationListener, Anim
 		
 		mLatitude = location.getLatitude();
 		mLongitude = location.getLongitude();
-		String result = GoogleMapsUtil.locationChange(map, getActivity(),mLatitude, mLongitude, mMarkerPoints);
+		String result = GoogleMapsUtil.locationChange(map, getActivity(), location, mMarkerPoints);
 
 		if (null != result) {
 			switch (result) {

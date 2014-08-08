@@ -57,6 +57,8 @@ public class CreateGameFragment extends Fragment implements LocationListener {
 	double mLongitude = 0;
 	ApplicationUtils appUtils;
 	private boolean isCreateGame = true;
+	
+	TextView angleTv;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -107,6 +109,9 @@ public class CreateGameFragment extends Fragment implements LocationListener {
 //				}
 			}
 		});
+		
+		angleTv = (TextView) rootView.findViewById(R.id.angleTv);
+		
 		return rootView;
 	}
 	
@@ -232,13 +237,11 @@ public class CreateGameFragment extends Fragment implements LocationListener {
 
 	@Override
 	public void onLocationChanged(Location location) {
-		mLatitude = location.getLatitude();
-		mLongitude = location.getLongitude();
-		LatLng point = new LatLng(mLatitude, mLongitude);
+		LatLng point = new LatLng(location.getLatitude(), location.getLongitude());
 		map.moveCamera(CameraUpdateFactory.newLatLng(point));
 		if (!isCreateGame) {
-			String result = GoogleMapsUtil.locationChange(map, getActivity(), mLatitude, mLongitude, mMarkerPoints);
-
+			String result = GoogleMapsUtil.locationChange(map, getActivity(), location, mMarkerPoints);
+			updateAngleTv();
 			if (null != result) {
 				switch (result) {
 				case "up":
@@ -302,6 +305,10 @@ public class CreateGameFragment extends Fragment implements LocationListener {
 		dialog.show();
 	}
 
+	public void updateAngleTv() {
+		angleTv.setText(Float.toString(GoogleMapsUtil.getAngle()));
+	}
+	
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {}
 

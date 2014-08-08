@@ -9,13 +9,13 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.hardware.GeomagneticField;
 import android.location.Geocoder;
 import android.location.Location;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
-import com.finalProject.util.CalculateBearing;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -28,6 +28,22 @@ public class GoogleMapsUtil {
 	EditText searchBox;
 	ImageButton searchButton;
 	Geocoder geoCoder;
+	
+	static float angle;
+
+	/**
+	 * @return the angle
+	 */
+	public static float getAngle() {
+		return angle;
+	}
+
+	/**
+	 * @param angle the angle to set
+	 */
+	public static void setAngle(float angle) {
+		GoogleMapsUtil.angle = angle;
+	}
 
 	public static void drawMarker(GoogleMap map, LatLng point, String title, String snippet, ArrayList<MarkerOptions> mMarkerPoints) {
 
@@ -86,10 +102,10 @@ public class GoogleMapsUtil {
 	 * @param bearing 
 	 * @return true if we have false otherwise
 	 */
-	public static  String locationChange(GoogleMap map, Context context, double mLatitude, double mLongitude, ArrayList<MarkerOptions> mMarkerPoints) {
+	public static  String locationChange(GoogleMap map, Context context, Location location, ArrayList<MarkerOptions> mMarkerPoints) {
 		String result = null;
 
-		LatLng point = new LatLng(mLatitude, mLongitude);
+		LatLng point = new LatLng(location.getLatitude(), location.getLongitude());
 		
 		map.moveCamera(CameraUpdateFactory.newLatLng(point));
 		map.animateCamera(CameraUpdateFactory.zoomTo(20));
@@ -98,7 +114,7 @@ public class GoogleMapsUtil {
 				result = checkIfHints(point , mMarkerPoints);
 				if (null== result) {
 					calculateP2PDirection(point, mMarkerPoints);
-					 result = checkNextDirection(point, mMarkerPoints);
+					 result = checkNextDirection(location, mMarkerPoints);
 
 				}
 			} else {
@@ -110,67 +126,75 @@ public class GoogleMapsUtil {
 
 	}
 
-	private static  String checkNextDirection(LatLng point, ArrayList<MarkerOptions> mMarkerPoints) {
-		//double absLong = Math.abs(mLongitude) - Math.abs(mMarkerPoints.get(0).getPosition().latitude);
-		//double absLat = Math.abs(mLatitude) - Math.abs(mMarkerPoints.get(0).getPosition().latitude);
+	private static  String checkNextDirection(Location location, ArrayList<MarkerOptions> mMarkerPoints) {
+//		LatLng point = new LatLng(location.getLatitude(), location.getLongitude());
+		Location dest = new Location(location);
+		dest.setLatitude(mMarkerPoints.get(0).getPosition().latitude);
+		dest.setLatitude(mMarkerPoints.get(0).getPosition().longitude);
+		float bearing = location.bearingTo(dest);
+		float heading = 0;
+		
+		GeomagneticField geoField = new GeomagneticField(
+				Double.valueOf(location.getLatitude()).floatValue(),
+				Double.valueOf(location.getLongitude()).floatValue(),
+				Double.valueOf(location.getAltitude()).floatValue(),
+				System.currentTimeMillis());
+		heading += geoField.getDeclination();
+		heading -= bearing;
+		angle = (heading + 360) % 360;
+		
+//		double absLong = Math.abs(point.longitude) - Math.abs(mMarkerPoints.get(0).getPosition().latitude);
+//		double absLat = Math.abs(point.latitude) - Math.abs(mMarkerPoints.get(0).getPosition().latitude);
 		String result = null;
-		double bearing = CalculateBearing.initial(point.latitude, point.longitude, mMarkerPoints.get(0).getPosition().latitude, mMarkerPoints.get(0).getPosition().latitude);
-//		if (bearing > 0.0 && absLong == 0.0) {
-//			return "down";
+//		double bearing = CalculateBearing.initial(point.latitude, point.longitude, mMarkerPoints.get(0).getPosition().latitude, mMarkerPoints.get(0).getPosition().latitude);
+//		if (absLat > 0.0 && absLong == 0.0) {
+//			result = "down";
 //		}
 //		if (absLat == 0.0 && absLong > 0.0) {
-//			return "left";
+//			result = "left";
 //		}
 //		if (absLat < 0.0 && absLong == 0.0) {
-//			return "up";
+//			result = "up";
 //		}
 //		if (absLat == 0.0 && absLong < 0.0) {
-//			return "right";
+//			result = "right";
 //		}
 //		if (absLat > 0.0 && absLong > 0.0) {
-//			return "downLeft";
+//			result = "downLeft";
 //		}
 //		if (absLat > 0.0 && absLong < 0.0) {
-//			return "downRight";
+//			result = "downRight";
 //		}
 //		if (absLat < 0.0 && absLong > 0.0) {
-//			return "upLeft";
+//			result = "upLeft";
 //		}
 //		if (absLat < 0.0 && absLong < 0.0) {
-//			return "upRight";
+//			result = "upRight";
 //		}
 
-		if (bearing >135 && bearing <225) {
+		if (angle >135 && angle <225) {
 			result = "down";
-//			return "down";
 		} 
-		if (bearing >225 && bearing <315) {
+		if (angle >225 && angle <315) {
 			result = "left";
-//			return "left";
 		} 
-		if ((bearing >315 && bearing <360) || (bearing <45 && bearing >0)) {
+		if ((angle >315 && angle <360) || (angle <45 && angle >0)) {
 			result = "up";
-//			return "up";
 		} 
-		if (bearing >45 && bearing <135) {
+		if (angle >45 && angle <135) {
 			result = "right";
-//			return "right";
 		} 
-		if (bearing >115 && bearing <155) {
+		if (angle >115 && angle <155) {
 			result = "downLeft";
-//			return "downLeft";
 		} 
-		if (bearing >205 && bearing <245) {
+		if (angle >205 && angle <245) {
 			result = "downRight";
-//			return "downRight";
 		} 
-		if (bearing >295 && bearing <335) {
+		if (angle >295 && angle <335) {
 			result = "upLeft";
-//			return "upLeft";
 		} 
-		if (bearing <60 && bearing >25) {
+		if (angle <60 && angle >25) {
 			result = "upRight";
-//			return "upRight";
 		}
 		return result;
 	}
