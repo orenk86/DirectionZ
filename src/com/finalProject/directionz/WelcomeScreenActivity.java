@@ -2,29 +2,44 @@ package com.finalProject.directionz;
 
 import java.util.ArrayList;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.MarkerOptions;
-
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.finalProject.util.EndGameInterface;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 public class WelcomeScreenActivity extends FragmentActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 	ArrayList<MarkerOptions> gameMarkers;
 	boolean isCreateGame = true;
-	Fragment startFragment = new StartGameFragment();
-	Fragment createFragment = new CreateGameFragment();
-	Fragment joinFragment = new JoinGameFragment();
+	StartGameFragment startFragment = new StartGameFragment();
+	CreateGameFragment createFragment = new CreateGameFragment();
+	JoinGameFragment joinFragment = new JoinGameFragment();
 	GoogleMap map;
-	int currentFragment = 0;
+	int currentScreen = 0;
+//	public EndGameInterface endGameCallback;
+
+	/**
+	 * @return the endGameCallback
+	 */
+//	public EndGameInterface getEndGameCallback() {
+//		return endGameCallback;
+//	}
+
+	/**
+	 * @param endGameCallback the endGameCallback to set
+	 */
+//	public void setEndGameCallback(EndGameInterface endGameCallback) {
+//		this.endGameCallback = endGameCallback;
+//	}
 
 	/**
 	 * @return the isCreateGame
@@ -101,8 +116,8 @@ public class WelcomeScreenActivity extends FragmentActivity implements Navigatio
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		switch (position) {
 		case 0:
-			if (currentFragment != 0) {
-				
+			if (currentScreen != 0){
+//				endGameCallback.endGame();
 			}
 			fragmentManager.beginTransaction().replace(R.id.container, createFragment).commit();
 			break;
@@ -113,6 +128,7 @@ public class WelcomeScreenActivity extends FragmentActivity implements Navigatio
 			fragmentManager.beginTransaction().replace(R.id.container, startFragment).commit();
 			break;
 		}
+		currentScreen = position;
 	}
 	
 //	public void startMainGameFragment() {

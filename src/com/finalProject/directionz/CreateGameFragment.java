@@ -32,9 +32,9 @@ import android.widget.TextView;
 import com.finalProject.datatype.RotatingImageView;
 import com.finalProject.googleMap.util.GoogleMapsUtil;
 import com.finalProject.util.ApplicationUtils;
+import com.finalProject.util.EndGameInterface;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
@@ -42,7 +42,6 @@ import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -63,8 +62,8 @@ public class CreateGameFragment extends Fragment implements LocationListener, Se
 	double mLongitude = 0;
 	ApplicationUtils appUtils;
 	private boolean isCreateGame = true;
+
 	boolean gameEnded = false;
-	
 	RotatingImageView arrow;
 	
 	SensorManager sensorManager;
@@ -76,6 +75,19 @@ public class CreateGameFragment extends Fragment implements LocationListener, Se
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		appUtils = new ApplicationUtils(getActivity());
+		
+//		((WelcomeScreenActivity) getActivity()).setEndGameCallback(new EndGameInterface() {
+//			
+//			@Override
+//			public void endGame() {
+//				// TODO Auto-generated method stub
+//				isCreateGame = true;
+//				gameEnded = true;
+//				setHasOptionsMenu(true);
+//				map.clear();
+//				mMarkerPoints.clear();
+//			}
+//		});
 		
         sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
@@ -265,9 +277,9 @@ public class CreateGameFragment extends Fragment implements LocationListener, Se
 	@Override
 	public void onLocationChanged(Location location) {
 		LatLng point = new LatLng(location.getLatitude(), location.getLongitude());
-		CameraUpdate pos = CameraUpdateFactory.newCameraPosition(CameraPosition.builder(map.getCameraPosition()).bearing(heading).build());
-		map.moveCamera(pos);
 		map.moveCamera(CameraUpdateFactory.newLatLng(point));
+//		CameraUpdate pos = CameraUpdateFactory.newCameraPosition(CameraPosition.builder(map.getCameraPosition()).bearing(heading).build());
+//		map.moveCamera(pos);
 		if (!isCreateGame) {
 			String result = GoogleMapsUtil.locationChange(map, getActivity(), location, mMarkerPoints, heading);
 			rotateArrow();
