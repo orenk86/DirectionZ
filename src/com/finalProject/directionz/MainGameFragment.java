@@ -45,6 +45,7 @@ public class MainGameFragment extends Fragment implements LocationListener, Anim
 	Dialog dialog;
 	double mLatitude = 0;
 	double mLongitude = 0;
+	float heading = 0;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -128,7 +129,7 @@ public class MainGameFragment extends Fragment implements LocationListener, Anim
 		
 		mLatitude = location.getLatitude();
 		mLongitude = location.getLongitude();
-		String result = GoogleMapsUtil.locationChange(map, getActivity(), location, mMarkerPoints);
+		String result = GoogleMapsUtil.locationChange(map, getActivity(), location, mMarkerPoints, heading);
 
 		if (null != result) {
 			switch (result) {

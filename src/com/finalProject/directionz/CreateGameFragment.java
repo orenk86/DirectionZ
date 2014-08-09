@@ -6,6 +6,10 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
@@ -41,7 +45,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class CreateGameFragment extends Fragment implements LocationListener {
+public class CreateGameFragment extends Fragment implements LocationListener, SensorEventListener {
 
 	View rootView;
 	GoogleMap map;
@@ -57,13 +61,21 @@ public class CreateGameFragment extends Fragment implements LocationListener {
 	double mLongitude = 0;
 	ApplicationUtils appUtils;
 	private boolean isCreateGame = true;
+	boolean gameEnded = false;
 	
 	TextView angleTv;
+	
+	SensorManager sensorManager;
+	Sensor sensor;
+	float heading;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		appUtils = new ApplicationUtils(getActivity());
+		
+        sensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+        sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
 	}
 
 	@Override
@@ -119,9 +131,13 @@ public class CreateGameFragment extends Fragment implements LocationListener {
 	public void onResume() {
 		super.onResume();
 		isCreateGame = ((WelcomeScreenActivity) getActivity()).isCreateGame();
-		setHasOptionsMenu(true);
+		sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
 		if (!isCreateGame) {
 			updateMap();
+			setHasOptionsMenu(false);
+			gameEnded = false;
+		} else {
+			setHasOptionsMenu(true);
 		}
 	}
 	
@@ -137,6 +153,7 @@ public class CreateGameFragment extends Fragment implements LocationListener {
 	public void onPause() {
 		super.onPause();
 //		((WelcomeScreenActivity) getActivity()).setCreateGame(true);
+		sensorManager.unregisterListener(this);
 	}
 
 	private void initializeMap() {
@@ -163,6 +180,11 @@ public class CreateGameFragment extends Fragment implements LocationListener {
 
 				// Creating a criteria object to retrieve provider
 				Criteria criteria = new Criteria();
+				criteria.setAccuracy(Criteria.ACCURACY_FINE);
+		        criteria.setHorizontalAccuracy(Criteria.ACCURACY_HIGH);
+		        criteria.setVerticalAccuracy(Criteria.ACCURACY_HIGH);
+		        criteria.setBearingAccuracy(Criteria.ACCURACY_HIGH);
+		        criteria.setSpeedAccuracy(Criteria.ACCURACY_HIGH);
 
 				// Getting the name of the best provider
 				String provider = locationManager.getBestProvider(criteria, true);
@@ -174,7 +196,7 @@ public class CreateGameFragment extends Fragment implements LocationListener {
 					onLocationChanged(location);
 				}
 
-				locationManager.requestLocationUpdates(provider, 20000, 0, this);
+				locationManager.requestLocationUpdates(provider, 4000, 0, this);
 
 				mLatitude = location.getLatitude();
 				mLongitude = location.getLongitude();
@@ -240,7 +262,7 @@ public class CreateGameFragment extends Fragment implements LocationListener {
 		LatLng point = new LatLng(location.getLatitude(), location.getLongitude());
 		map.moveCamera(CameraUpdateFactory.newLatLng(point));
 		if (!isCreateGame) {
-			String result = GoogleMapsUtil.locationChange(map, getActivity(), location, mMarkerPoints);
+			String result = GoogleMapsUtil.locationChange(map, getActivity(), location, mMarkerPoints, heading);
 			updateAngleTv();
 			if (null != result) {
 				switch (result) {
@@ -276,7 +298,10 @@ public class CreateGameFragment extends Fragment implements LocationListener {
 					// directionImage.setImageResource(R.drawable.down_left_arrow);
 					Toast.makeText(getActivity(), "Turn around and go Left", Toast.LENGTH_SHORT).show();
 					break;
-				default:
+				case "hintReached":
+					openDialog(result);
+					break;
+				case "endGame":
 					openDialog(result);
 					break;
 				}
@@ -299,14 +324,15 @@ public class CreateGameFragment extends Fragment implements LocationListener {
 			mMarkerPoints.remove(mMarkerPoints.get(0));
 			((WelcomeScreenActivity) getActivity()).setGameMarkers(mMarkerPoints);
 			tempMarkerPoints = ((WelcomeScreenActivity) getActivity()).getGameMarkers(); 
-		} else {
+		} else if (!gameEnded) {
 			dialog.setContentView(R.layout.end_game_popup);
+			gameEnded = true;
 		}
 		dialog.show();
 	}
-
+	
 	public void updateAngleTv() {
-		angleTv.setText(Float.toString(GoogleMapsUtil.getAngle()));
+		angleTv.setText(Double.toString(GoogleMapsUtil.getAngle()));
 	}
 	
 	@Override
@@ -355,4 +381,12 @@ public class CreateGameFragment extends Fragment implements LocationListener {
 		}
 
 	}
+
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+		heading = event.values[0];
+	}
+
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 }

@@ -16,6 +16,7 @@ import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+import com.finalProject.util.CalculateBearing;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -29,12 +30,13 @@ public class GoogleMapsUtil {
 	ImageButton searchButton;
 	Geocoder geoCoder;
 	
-	static float angle;
+	static double angle;
+
 
 	/**
 	 * @return the angle
 	 */
-	public static float getAngle() {
+	public static double getAngle() {
 		return angle;
 	}
 
@@ -102,7 +104,7 @@ public class GoogleMapsUtil {
 	 * @param bearing 
 	 * @return true if we have false otherwise
 	 */
-	public static  String locationChange(GoogleMap map, Context context, Location location, ArrayList<MarkerOptions> mMarkerPoints) {
+	public static  String locationChange(GoogleMap map, Context context, Location location, ArrayList<MarkerOptions> mMarkerPoints, float heading) {
 		String result = null;
 
 		LatLng point = new LatLng(location.getLatitude(), location.getLongitude());
@@ -114,7 +116,7 @@ public class GoogleMapsUtil {
 				result = checkIfHints(point , mMarkerPoints);
 				if (null== result) {
 					calculateP2PDirection(point, mMarkerPoints);
-					 result = checkNextDirection(location, mMarkerPoints);
+					 result = checkNextDirection(location, mMarkerPoints, heading);
 
 				}
 			} else {
@@ -126,51 +128,20 @@ public class GoogleMapsUtil {
 
 	}
 
-	private static  String checkNextDirection(Location location, ArrayList<MarkerOptions> mMarkerPoints) {
-//		LatLng point = new LatLng(location.getLatitude(), location.getLongitude());
-		Location dest = new Location(location);
-		dest.setLatitude(mMarkerPoints.get(0).getPosition().latitude);
-		dest.setLatitude(mMarkerPoints.get(0).getPosition().longitude);
-		float bearing = location.bearingTo(dest);
-		float heading = 0;
-		
+	private static  String checkNextDirection(Location location, ArrayList<MarkerOptions> mMarkerPoints, float heading) {
+		double bearing = CalculateBearing.getBearing(location.getLatitude(), location.getLongitude(), mMarkerPoints.get(0).getPosition().latitude, mMarkerPoints.get(0).getPosition().longitude);
+		double headingDouble = (360 - heading) % 360;
 		GeomagneticField geoField = new GeomagneticField(
 				Double.valueOf(location.getLatitude()).floatValue(),
 				Double.valueOf(location.getLongitude()).floatValue(),
 				Double.valueOf(location.getAltitude()).floatValue(),
 				System.currentTimeMillis());
-		heading += geoField.getDeclination();
-		heading -= bearing;
-		angle = (heading + 360) % 360;
+		headingDouble += geoField.getDeclination();
+		bearing = (bearing + 360) % 360;
+		headingDouble =  headingDouble - bearing;
+		angle = (headingDouble + 360) % 360;
 		
-//		double absLong = Math.abs(point.longitude) - Math.abs(mMarkerPoints.get(0).getPosition().latitude);
-//		double absLat = Math.abs(point.latitude) - Math.abs(mMarkerPoints.get(0).getPosition().latitude);
 		String result = null;
-//		double bearing = CalculateBearing.initial(point.latitude, point.longitude, mMarkerPoints.get(0).getPosition().latitude, mMarkerPoints.get(0).getPosition().latitude);
-//		if (absLat > 0.0 && absLong == 0.0) {
-//			result = "down";
-//		}
-//		if (absLat == 0.0 && absLong > 0.0) {
-//			result = "left";
-//		}
-//		if (absLat < 0.0 && absLong == 0.0) {
-//			result = "up";
-//		}
-//		if (absLat == 0.0 && absLong < 0.0) {
-//			result = "right";
-//		}
-//		if (absLat > 0.0 && absLong > 0.0) {
-//			result = "downLeft";
-//		}
-//		if (absLat > 0.0 && absLong < 0.0) {
-//			result = "downRight";
-//		}
-//		if (absLat < 0.0 && absLong > 0.0) {
-//			result = "upLeft";
-//		}
-//		if (absLat < 0.0 && absLong < 0.0) {
-//			result = "upRight";
-//		}
 
 		if (angle >135 && angle <225) {
 			result = "down";
@@ -204,7 +175,7 @@ public class GoogleMapsUtil {
 		if (mMarkerPoints.size() >= 1) {
 			double abslong = Math.abs(point.longitude - mMarkerPoints.get(0).getPosition().longitude);
 			double abslat = Math.abs(point.latitude - mMarkerPoints.get(0).getPosition().latitude);
-			if (abslong <= 0.00005 && abslat <= 0.00005) {
+			if (abslong <= 0.0001 && abslat <= 0.0001) {
 				result = "hintReached";
 			}
 		} else {
