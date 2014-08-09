@@ -30,6 +30,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.finalProject.datatype.RotatingImageView;
 import com.finalProject.googleMap.util.GoogleMapsUtil;
 import com.finalProject.util.ApplicationUtils;
 import com.google.android.gms.common.ConnectionResult;
@@ -63,7 +64,7 @@ public class CreateGameFragment extends Fragment implements LocationListener, Se
 	private boolean isCreateGame = true;
 	boolean gameEnded = false;
 	
-	TextView angleTv;
+	RotatingImageView arrow;
 	
 	SensorManager sensorManager;
 	Sensor sensor;
@@ -122,8 +123,8 @@ public class CreateGameFragment extends Fragment implements LocationListener, Se
 			}
 		});
 		
-		angleTv = (TextView) rootView.findViewById(R.id.angleTv);
-		
+		arrow = (RotatingImageView) rootView.findViewById(R.id.arrow);
+				
 		return rootView;
 	}
 	
@@ -136,8 +137,10 @@ public class CreateGameFragment extends Fragment implements LocationListener, Se
 			updateMap();
 			setHasOptionsMenu(false);
 			gameEnded = false;
+			arrow.setVisibility(View.VISIBLE);
 		} else {
 			setHasOptionsMenu(true);
+			arrow.setVisibility(View.INVISIBLE);
 		}
 	}
 	
@@ -196,7 +199,7 @@ public class CreateGameFragment extends Fragment implements LocationListener, Se
 					onLocationChanged(location);
 				}
 
-				locationManager.requestLocationUpdates(provider, 4000, 0, this);
+				locationManager.requestLocationUpdates(provider, 100, 0, this);
 
 				mLatitude = location.getLatitude();
 				mLongitude = location.getLongitude();
@@ -263,41 +266,41 @@ public class CreateGameFragment extends Fragment implements LocationListener, Se
 		map.moveCamera(CameraUpdateFactory.newLatLng(point));
 		if (!isCreateGame) {
 			String result = GoogleMapsUtil.locationChange(map, getActivity(), location, mMarkerPoints, heading);
-			updateAngleTv();
+			rotateArrow();
 			if (null != result) {
 				switch (result) {
-				case "up":
-					// directionImage.setImageResource(R.drawable.up_arrow);
-					Toast.makeText(getActivity(), "Continue Straight", Toast.LENGTH_SHORT).show();
-					break;
-				case "down":
-					// directionImage.setImageResource(R.drawable.down_arrow);
-					Toast.makeText(getActivity(), "Go Back", Toast.LENGTH_SHORT).show();
-					break;
-				case "left":
-					// directionImage.setImageResource(R.drawable.left_arrow);
-					Toast.makeText(getActivity(), "Turn Left", Toast.LENGTH_SHORT).show();
-					break;
-				case "right":
-					// directionImage.setImageResource(R.drawable.right_arrow);
-					Toast.makeText(getActivity(), "Turn Right", Toast.LENGTH_SHORT).show();
-					break;
-				case "upRight":
-					// directionImage.setImageResource(R.drawable.up_right_arrow);
-					Toast.makeText(getActivity(), "Continue Straight and to the Right", Toast.LENGTH_SHORT).show();
-					break;
-				case "upLeft":
-					// directionImage.setImageResource(R.drawable.up_left_arrow);
-					Toast.makeText(getActivity(), "Continue Straight and to the Left", Toast.LENGTH_SHORT).show();
-					break;
-				case "downRight":
-					// directionImage.setImageResource(R.drawable.down_right_arrow);
-					Toast.makeText(getActivity(), "Turn around and go Right", Toast.LENGTH_SHORT).show();
-					break;
-				case "downLeft":
-					// directionImage.setImageResource(R.drawable.down_left_arrow);
-					Toast.makeText(getActivity(), "Turn around and go Left", Toast.LENGTH_SHORT).show();
-					break;
+//				case "up":
+//					// directionImage.setImageResource(R.drawable.up_arrow);
+//					Toast.makeText(getActivity(), "Continue Straight", Toast.LENGTH_SHORT).show();
+//					break;
+//				case "down":
+//					// directionImage.setImageResource(R.drawable.down_arrow);
+//					Toast.makeText(getActivity(), "Go Back", Toast.LENGTH_SHORT).show();
+//					break;
+//				case "left":
+//					// directionImage.setImageResource(R.drawable.left_arrow);
+//					Toast.makeText(getActivity(), "Turn Left", Toast.LENGTH_SHORT).show();
+//					break;
+//				case "right":
+//					// directionImage.setImageResource(R.drawable.right_arrow);
+//					Toast.makeText(getActivity(), "Turn Right", Toast.LENGTH_SHORT).show();
+//					break;
+//				case "upRight":
+//					// directionImage.setImageResource(R.drawable.up_right_arrow);
+//					Toast.makeText(getActivity(), "Continue Straight and to the Right", Toast.LENGTH_SHORT).show();
+//					break;
+//				case "upLeft":
+//					// directionImage.setImageResource(R.drawable.up_left_arrow);
+//					Toast.makeText(getActivity(), "Continue Straight and to the Left", Toast.LENGTH_SHORT).show();
+//					break;
+//				case "downRight":
+//					// directionImage.setImageResource(R.drawable.down_right_arrow);
+//					Toast.makeText(getActivity(), "Turn around and go Right", Toast.LENGTH_SHORT).show();
+//					break;
+//				case "downLeft":
+//					// directionImage.setImageResource(R.drawable.down_left_arrow);
+//					Toast.makeText(getActivity(), "Turn around and go Left", Toast.LENGTH_SHORT).show();
+//					break;
 				case "hintReached":
 					openDialog(result);
 					break;
@@ -331,8 +334,8 @@ public class CreateGameFragment extends Fragment implements LocationListener, Se
 		dialog.show();
 	}
 	
-	public void updateAngleTv() {
-		angleTv.setText(Double.toString(GoogleMapsUtil.getAngle()));
+	public void rotateArrow() {
+		arrow.setDirection((int) GoogleMapsUtil.getAngle());
 	}
 	
 	@Override

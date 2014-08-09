@@ -23,8 +23,8 @@ public class WelcomeScreenActivity extends FragmentActivity implements Navigatio
 	Fragment startFragment = new StartGameFragment();
 	Fragment createFragment = new CreateGameFragment();
 	Fragment joinFragment = new JoinGameFragment();
-	Fragment playFragment = new MainGameFragment();
 	GoogleMap map;
+	int currentFragment = 0;
 
 	/**
 	 * @return the isCreateGame
@@ -101,6 +101,9 @@ public class WelcomeScreenActivity extends FragmentActivity implements Navigatio
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		switch (position) {
 		case 0:
+			if (currentFragment != 0) {
+				
+			}
 			fragmentManager.beginTransaction().replace(R.id.container, createFragment).commit();
 			break;
 		case 1:
@@ -112,9 +115,9 @@ public class WelcomeScreenActivity extends FragmentActivity implements Navigatio
 		}
 	}
 	
-	public void startMainGameFragment() {
-		getSupportFragmentManager().beginTransaction().replace(R.id.container, playFragment).commit();
-	}
+//	public void startMainGameFragment() {
+//		getSupportFragmentManager().beginTransaction().replace(R.id.container, playFragment).commit();
+//	}
 
 	public void onSectionAttached(int number) {
 		switch (number) {
