@@ -28,13 +28,13 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.finalProject.datatype.RotatingImageView;
 import com.finalProject.googleMap.util.GoogleMapsUtil;
 import com.finalProject.util.ApplicationUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
@@ -42,6 +42,7 @@ import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
 import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -70,6 +71,7 @@ public class CreateGameFragment extends Fragment implements LocationListener, Se
 	Sensor sensor;
 	float heading;
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -199,7 +201,7 @@ public class CreateGameFragment extends Fragment implements LocationListener, Se
 					onLocationChanged(location);
 				}
 
-				locationManager.requestLocationUpdates(provider, 100, 0, this);
+				locationManager.requestLocationUpdates(provider, 500, 0, this);
 
 				mLatitude = location.getLatitude();
 				mLongitude = location.getLongitude();
@@ -263,6 +265,8 @@ public class CreateGameFragment extends Fragment implements LocationListener, Se
 	@Override
 	public void onLocationChanged(Location location) {
 		LatLng point = new LatLng(location.getLatitude(), location.getLongitude());
+		CameraUpdate pos = CameraUpdateFactory.newCameraPosition(CameraPosition.builder(map.getCameraPosition()).bearing(heading).build());
+		map.moveCamera(pos);
 		map.moveCamera(CameraUpdateFactory.newLatLng(point));
 		if (!isCreateGame) {
 			String result = GoogleMapsUtil.locationChange(map, getActivity(), location, mMarkerPoints, heading);
